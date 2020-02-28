@@ -1,13 +1,24 @@
- const express = require('express');
+const express = require('express');
+const router = express.Router();
+ const passport= require('passport');
 
- const  router = express.Router();
+const usersController = require('../controllers/user_controller');
 
- const userController=require('../controllers/user_controller');
+//  if authenication is checked then we will get sign in page
+router.get('/profile',passport.checkAuthentication, usersController.profile);
 
- router.get('/profile',userController.profile);
+router.get('/sign-up', usersController.signUp);
+router.get('/sign-in', usersController.signIn);
 
- router.get('/sign-up',userController.signup);
- router.get('/sign-in',userController.signin);
 
- module.exports=router;
+router.post('/create', usersController.create);
 
+//use passport as a middleware to authenicate
+router.post('/create-session',passport.authenticate(
+    'local',
+    {failureRedirect:'/users/sign-in'}
+),usersController.createSession);
+
+router.get('/sign-out',usersController.destroySession);
+
+module.exports = router;

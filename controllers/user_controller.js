@@ -1,4 +1,4 @@
-const user= require('../models/user');
+const User= require('../models/user');
 module.exports.profile= function(req,res){
      return res.end('user_profile',{
          title: 'User Profile'
@@ -7,8 +7,12 @@ module.exports.profile= function(req,res){
 
 
 //render the sign up page
-module.exports.signup=function(req,res){
-    return res.render('user_sing_up',{
+module.exports.signUp=function(req,res){
+    if(req.isAuthenticated()){
+     return  res.redirect('/users/profile');
+   }
+    
+    return res.render('user_sign_up',{
         title: "Cddeial | Sign up"
     })
 }
@@ -16,7 +20,11 @@ module.exports.signup=function(req,res){
 
 //render the sign in page
 module.exports.signIn=function(req,res){
-    return res.render('user_sing_in',{
+    if(req.isAuthenticated()){
+         return res.redirect('/users/profile');
+   }
+    
+    return res.render('user_sign_in',{
         title: "Cddeial | Sign In"
     })
 }
@@ -27,12 +35,12 @@ module.exports.create= function(req,res){
     if(req.body.password!=req.body.confirm_password){
         return  res.redirect('back');
     }
-    user.findOne({email: req.body.email},function(err,user){
+    User.findOne({email: req.body.email},function(err,user){
         if(err){console.log('error in finding in signing up');
         return;
     }
     if(!user){
-        user.create(req.body,function(err,user){
+        User.create(req.body,function(err,user){
             if(err){console.log('error  in cresting user while up');return}
             return  res.redirect('/users/sign-in');
         })
@@ -45,7 +53,11 @@ module.exports.create= function(req,res){
 
 // sign in and create a session for the user
 module.exports.createSession=function(req,res){
-    return res.render('user_sing_up',{
-        title: "Cddeial | Sign Up"
-    })
+    return  res.redirect('/');
+    
+}
+
+module.exports.destroySession = function(req,res){
+    req.logout();
+    return  res.redirect('/');
 }
