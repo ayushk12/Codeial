@@ -36,6 +36,11 @@ app.use(expressLayouts);
 app.set("layout exractStyles", "true");
 app.set("layout exractScript", "true");
 
+//set up the view engine
+app.set("view engine", "ejs");
+app.set("views", "./views");
+
+
 //mongo store is used to store the session cookie in the db
 app.use(
   session({
@@ -71,9 +76,6 @@ app.use(passport.setAuthenticatedUser);
 //use express router
 app.use("/", require("./routes"));
 
-//set up the view engine
-app.set("view engine", "ejs");
-app.set("views", "./views");
 
 app.listen(port, err => {
   if (err) {
