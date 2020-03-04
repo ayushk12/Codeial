@@ -1,54 +1,43 @@
-<head>
-<title>
-    <%= title  %>
-</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.js"></script>
-<link rel="stylesheet" href="/css/layout.css">
-<link rel="stylesheet" href="/css/header.css">
-<link rel="stylesheet" href="/css/footer.css">
-
-<%- style %>
-
-</head>
-
-<body>
-<%- include('_header'); %>
+const Post = require('../models/post');
+const User = require('../models/user');
 
 
 
-<main id="layout-main">
-    <%- body %>
+module.exports.home = async function(req, res){
 
-</main>
+    try{
+         // populate the user of each post
+        let posts = await Post.find({})
+        .sort(-'createdAt')
+        .populate('user')
+        .populate({
+            path: 'comments',
+            populate: {
+                path: 'user'
+            }
+        });
+    
+        let users = await User.find({});
+
+        return res.render('home', {
+            title: "Codeial | Home",
+            posts:  posts,
+            all_users: users
+        });
+
+    }catch(err){
+        console.log('Error', err);
+        return;
+    }
+   
+}
+
+// module.exports.actionName = function(req, res){}
 
 
-<%- include('_footer'); %>
+// using then
+// Post.find({}).populate('comments').then(function());
 
-<%- script %>
+// let posts = Post.find({}).populate('comments').exec();
 
-<script>
-    <% if (flash.success && flash.success.length > 0) {%>
-        new Noty({
-            theme: 'relax',
-            text: "<%= flash.success %>",
-            type: 'success',
-            layout: 'topRight',
-            timeout: 1500
-            
-        }).show();    
-    <%} %>
-
-    <% if (flash.error && flash.error.length > 0) {%>
-        new Noty({
-            theme: 'relax',
-            text: "<%= flash.error %>",
-            type: 'error',
-            layout: 'topRight',
-            timeout: 1500
-            
-        }).show();    
-    <%} %>
-</script>
-
-</body>
+// posts.then()
