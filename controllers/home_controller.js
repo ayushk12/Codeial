@@ -1,37 +1,54 @@
-const Post = require('../models/post');
-const User= require('../models/user');
+<head>
+<title>
+    <%= title  %>
+</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/noty/3.1.4/noty.min.js"></script>
+<link rel="stylesheet" href="/css/layout.css">
+<link rel="stylesheet" href="/css/header.css">
+<link rel="stylesheet" href="/css/footer.css">
 
-module.exports.home=  async function(req,res){
+<%- style %>
 
-    // populate the user at each post
-    // applying assync and await 
+</head>
 
-    try{
-        let posts=  await Post.find({})
-    .populate('user')
-    .populate({
-        path: 'comments',
-        populate: {
-            path: 'user'
-        }
-    });
-    let users= await user.find({});
+<body>
+<%- include('_header'); %>
 
-            return res.render('home',{
-                title: " Codeial | Home",
-                posts:posts,
-                all_users: users
-        });
-    
-    } catch(err){
-        console.log('Error',err);
-        return;
 
-    }
-   
-       
-        
-    
-   
-}
 
+<main id="layout-main">
+    <%- body %>
+
+</main>
+
+
+<%- include('_footer'); %>
+
+<%- script %>
+
+<script>
+    <% if (flash.success && flash.success.length > 0) {%>
+        new Noty({
+            theme: 'relax',
+            text: "<%= flash.success %>",
+            type: 'success',
+            layout: 'topRight',
+            timeout: 1500
+            
+        }).show();    
+    <%} %>
+
+    <% if (flash.error && flash.error.length > 0) {%>
+        new Noty({
+            theme: 'relax',
+            text: "<%= flash.error %>",
+            type: 'error',
+            layout: 'topRight',
+            timeout: 1500
+            
+        }).show();    
+    <%} %>
+</script>
+
+</body>
