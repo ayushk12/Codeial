@@ -1,5 +1,6 @@
 const Post = require('../models/post');
 const Comment = require('../models/comment');
+const Like = require('../models/like');
 
 module.exports.create = async function(req, res){
     try{
@@ -9,6 +10,9 @@ module.exports.create = async function(req, res){
         });
         
         if(req.xhr){
+             // if we want to populate just the name of the user (we'll not want to send the password in the API), this is how we do it!
+             post = await post.populate('user', 'name').execPopulate();
+
             return res.status(200).json({
                 data: {
                   post : post  
@@ -21,6 +25,8 @@ module.exports.create = async function(req, res){
         return res.redirect('back');
 
     }catch(err){
+        // added this to view the error on console as well
+        console.log(err);
         req.flash('error', err);
         return res.redirect('back');
     }
@@ -34,6 +40,12 @@ module.exports.destroy = async function(req, res){
         let post = await Post.findById(req.params.id);
 
         if (post.user == req.user.id){
+
+             // CHANGE :: delete the associated likes for the post and all its comments' likes too
+             await Like.deleteMany({likeable: post, onModel: 'Post'});
+             await Like.deleteMany({_id: {$in: post.comments}});
+ 
+
             post.remove();
 
             await Comment.deleteMany({post: req.params.id});

@@ -16,13 +16,12 @@ const commentSchema= new mongoose.Schema({
     },
     // include the array at ids of all comments in this post schema itself
 
-    comments: [
-         {
-             
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'comment'
-         }
-     ]
+    likes: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Like'
+        }
+    ]
 
 
  }, {
